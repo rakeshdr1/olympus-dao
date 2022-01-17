@@ -1,29 +1,60 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
-const hre = require("hardhat");
-
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const firstEpochNumber = "";
+  const firstBlockNumber = "";
+  const gOhm = "";
 
-  // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const [deployer] = await ethers.getSigners();
+  console.log(`Deploying contract with the account: ${deployer.address}`);
 
-  await greeter.deployed();
+  const balance = await deployer.getBalance();
+  console.log(`Account Balance:${balance.toString()}`);
 
-  console.log("Greeter deployed to:", greeter.address);
+  const AuthFactory = await ethers.getContractFactory("OlympusAuthority");
+  const authority = await AuthFactory.deploy(
+    deployer.address,
+    deployer.address,
+    deployer.address,
+    deployer.address
+  );
+
+  const OHM = await ethers.getContractFactory("OlympusERC20Token");
+  const ohm = await OHM.deploy(authority.address);
+
+  const OlympusTreasury = await ethers.getContractFactory("OlympusTreasury");
+  const treasury = await OlympusTreasury.deploy(
+    ohm.address,
+    "0",
+    authority.address
+  );
+
+  const SOHM = await ethers.getContractFactory("sOlympus");
+  const sOhm = await SOHM.deploy();
+
+  const OlympusStaking = await ethers.getContractFactory("OlympusStaking");
+  const staking = await OlympusStaking.deploy(
+    ohm.address,
+    sOhm.address,
+    gOhm,
+    "2200",
+    firstEpochNumber,
+    firstBlockNumber,
+    authority.address
+  );
+  await sOhm.setIndex("");
+  await sOhm.initialize(staking.address, treasury.address);
+
+  const BondDepository = await ethers.getContractFactory(
+    "OlympusBondDepositoryV2"
+  );
+
+  const bond = await BondDepository.deploy(
+    authority.address,
+    ohm.address,
+    "",
+    staking.address,
+    treasury.address
+  );
 }
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
