@@ -1,7 +1,9 @@
+const fs = require("fs");
+
 async function main() {
-  const firstEpochNumber = "";
-  const firstBlockNumber = "";
-  const gOhm = "";
+  const firstEpochNumber = "550";
+  const firstBlockNumber = "9505000";
+  const gOhm = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f";
 
   const [deployer] = await ethers.getSigners();
   console.log(`Deploying contract with the account: ${deployer.address}`);
@@ -27,6 +29,18 @@ async function main() {
     authority.address
   );
 
+  console.log(`Treasury address:${treasury.address}`);
+
+  const treasuryData = {
+    address: treasury.address,
+    abi: JSON.parse(treasury.interface.format("json")),
+  };
+
+  fs.writeFileSync(
+    "deployments/OlympusTreasury.json",
+    JSON.stringify(treasuryData)
+  );
+
   const SOHM = await ethers.getContractFactory("sOlympus");
   const sOhm = await SOHM.deploy();
 
@@ -40,8 +54,20 @@ async function main() {
     firstBlockNumber,
     authority.address
   );
-  await sOhm.setIndex("");
+  await sOhm.setIndex("7675210820");
   await sOhm.initialize(staking.address, treasury.address);
+
+  console.log(`Staking address:${staking.address}`);
+
+  const stakingData = {
+    address: staking.address,
+    abi: JSON.parse(staking.interface.format("json")),
+  };
+
+  fs.writeFileSync(
+    "deployments/OlympusStaking.json",
+    JSON.stringify(stakingData)
+  );
 
   const BondDepository = await ethers.getContractFactory(
     "OlympusBondDepositoryV2"
@@ -50,9 +76,21 @@ async function main() {
   const bond = await BondDepository.deploy(
     authority.address,
     ohm.address,
-    "",
+    gOhm,
     staking.address,
     treasury.address
+  );
+
+  console.log(`Bond address:${bond.address}`);
+
+  const data = {
+    address: bond.address,
+    abi: JSON.parse(bond.interface.format("json")),
+  };
+
+  fs.writeFileSync(
+    "deployments/OlympusBondDepositoryV2.json",
+    JSON.stringify(data)
   );
 }
 main().catch((error) => {
