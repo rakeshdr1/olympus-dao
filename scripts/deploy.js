@@ -19,6 +19,8 @@ async function main() {
     deployer.address
   );
 
+  console.log(`Authority address:${authority.address}`);
+
   const OHM = await ethers.getContractFactory("OlympusERC20Token");
   const ohm = await OHM.deploy(authority.address);
 
