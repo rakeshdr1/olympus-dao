@@ -7,9 +7,9 @@ describe("BondDepository", async () => {
   let authFactory;
   let ohm, sOhm;
 
-  const firstEpochNumber = "";
-  const firstBlockNumber = "";
-  const gOhm = "";
+  const firstEpochNumber = "550";
+  const firstBlockNumber = "9505000";
+  const gOhm = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f";
 
   beforeEach(async () => {
     [deployer, user1, user2] = await ethers.getSigners();
@@ -46,7 +46,7 @@ describe("BondDepository", async () => {
       firstBlockNumber,
       authority.address
     );
-    await sOhm.setIndex("");
+    await sOhm.setIndex("7675210820");
     await sOhm.initialize(staking.address, treasury.address);
 
     const BondDepository = await ethers.getContractFactory(
@@ -55,7 +55,7 @@ describe("BondDepository", async () => {
     bond = await BondDepository.deploy(
       authority.address,
       ohm.address,
-      "",
+      gOhm,
       staking.address,
       treasury.address
     );
