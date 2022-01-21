@@ -11,20 +11,47 @@ LUSD Allocator - https://rinkeby.etherscan.io/address/0x51357831F75C36282417d3d0
 
 ```
 
-# Etherscan verification
+# Contract Workflow
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+Includes mainly Bond, Treasury and Allocator Contracts.
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+Bond provides discounted Ohm in exchange of token reserves(e.g: DAI token) from User.
 
 ```shell
-hardhat run --network ropsten scripts/deploy.js
+* Bond Contract: consists of mainly create and deposit functions
+1.  create() function for creating markets for tokens of a specified interval and yield price.
+
+function create(
+        IERC20 _quoteToken, // token used to deposit
+        uint256[3] memory _market, // [capacity, initial price]
+        bool[2] memory _booleans, // [capacity in quote, fixed term]
+        uint256[2] memory _terms, // [vesting, conclusion]
+        uint32[2] memory _intervals // [deposit interval, tune interval]
+    ) external returns (uint256 id_);
+
+2. deposit() function of accepting tokens deposit from a user
+
+    function deposit(
+        uint256 _bid,
+        uint256 _amount,
+        uint256 _maxPrice,
+        address _user,
+        address _referral
+    )
+        external
+        returns (
+            uint256 payout_,
+            uint256 expiry_,
+            uint256 index_
+        );
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+```shell
+* Treasury Contract:
+```
 
 ```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+* Allocator Contract:
 ```
 
 ```shell
