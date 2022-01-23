@@ -13,45 +13,46 @@ LUSD Allocator - https://rinkeby.etherscan.io/address/0x51357831F75C36282417d3d0
 
 # Contract Workflow
 
+![This is an image](/assets/img/dao.png)
+
 Includes mainly Bond, Treasury and Allocator Contracts.
 
-Bond provides discounted Ohm in exchange of token reserves(e.g: DAI token) from User.
+Provides discounted Ohm in exchange of token reserves(e.g: DAI token) from User.
 
 ```shell
-* Bond Contract: consists of mainly create and deposit functions
-1.  create() function for creating markets for tokens of a specified interval and yield price.
+* Bond Contract: consists of mainly create and deposit functions.
+1.  create() function, for creating markets for tokens of a specified interval and yield price.
 
-function create(
-        IERC20 _quoteToken, // token used to deposit
-        uint256[3] memory _market, // [capacity, initial price]
-        bool[2] memory _booleans, // [capacity in quote, fixed term]
-        uint256[2] memory _terms, // [vesting, conclusion]
-        uint32[2] memory _intervals // [deposit interval, tune interval]
-    ) external returns (uint256 id_);
+    function create();
 
-2. deposit() function of accepting tokens deposit from a user
+2. deposit() function, accepts tokens deposit from a user.
+    * user data is stored as notes (storing tokens value, time created and when payment is redeemable)
 
-    function deposit(
-        uint256 _bid,
-        uint256 _amount,
-        uint256 _maxPrice,
-        address _user,
-        address _referral
-    )
-        external
-        returns (
-            uint256 payout_,
-            uint256 expiry_,
-            uint256 index_
-        );
+    function deposit();
 ```
 
 ```shell
-* Treasury Contract:
+* Treasury Contract: Treasury manages reserves, minting new ohm (using excess reserves) and burning ohm.
+
+1. deposit() function, allows approved address to deposit asset(tokens) for ohm
+
+    function deposit();
+
+2. withdraw() function, allows approved address to burn ohm for reserves
+
+    function withdraw();
+
+3. manage() function, allows approved address to withdraw assets
+
+    function withdraw();
 ```
 
 ```shell
-* Allocator Contract:
+* Allocator Contract: Allocating assets to pools to earn yields
+
+1. deposit() function, withdraws assets from treasury and deposit asset to stability pool.
+
+2. withdraw() function, Withdraws from stability pool and deposits assets into treasury.
 ```
 
 ```shell
